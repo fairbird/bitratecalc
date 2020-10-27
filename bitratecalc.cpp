@@ -22,6 +22,7 @@
 
 #include "bitratecalc.h"
 #include <fcntl.h>
+#include <Python.h>
 
 eBitrateCalc::eBitrateCalc(int pid, int dvbnamespace, int tsid, int onid, int refreshintervall, int buffer_size): m_size(0), m_refresh_intervall(refreshintervall)
 {
@@ -155,7 +156,11 @@ static void
 eBitrateCalculatorPy_dealloc(eBitrateCalculatorPy* self)
 {
 	eBitrateCalculatorPy_clear(self);
+#if PY_MAJOR_VERSION >= 3
+	Py_TYPE(self)->tp_free((PyObject*)self);
+#else
 	self->ob_type->tp_free((PyObject*)self);
+#endif
 }
 
 static PyObject *
@@ -187,7 +192,9 @@ static PyGetSetDef eBitrateCalculatorPy_getseters[] = {
 static PyTypeObject eBitrateCalculatorPyType = {
 	PyObject_HEAD_INIT(NULL)
 	0, /*ob_size*/
+#if PY_MAJOR_VERSION < 3
 	"eBitrateImpl.eBitrateCalculator", /*tp_name*/
+#endif
 	sizeof(eBitrateCalculatorPy), /*tp_basicsize*/
 	0, /*tp_itemsize*/
 	(destructor)eBitrateCalculatorPy_dealloc, /*tp_dealloc*/
@@ -229,7 +236,32 @@ static PyTypeObject eBitrateCalculatorPyType = {
 static PyMethodDef module_methods[] = {
 	{NULL}  /* Sentinel */
 };
+#if PY_MAJOR_VERSION >= 3
+static struct PyModuleDef moduledef = {
+	PyModuleDef_HEAD_INIT,
+	"bitratecalc",       /* m_name */
+	"bitratecalc",       /* m_doc */
+	-1,                  /* m_size */
+	module_methods,      /* m_methods */
+	NULL,                /* m_reload */
+	NULL,                /* m_traverse */
+	NULL,                /* m_clear */
+	NULL,                /* m_free */
+};
 
+PyMODINIT_FUNC PyInit_bitratecalc(void)
+{
+	PyObject* m = PyModule_Create(&moduledef);
+
+	if (m == NULL)
+		return NULL;
+	if (!PyType_Ready(&eBitrateCalculatorPyType))
+	{
+		Org_Py_INCREF((PyObject*)&eBitrateCalculatorPyType);
+		PyModule_AddObject(m, "eBitrateCalculator", (PyObject*)&eBitrateCalculatorPyType);
+	}
+}
+#else
 PyMODINIT_FUNC
 initbitratecalc(void)
 {
@@ -243,4 +275,5 @@ initbitratecalc(void)
 		PyModule_AddObject(m, "eBitrateCalculator", (PyObject*)&eBitrateCalculatorPyType);
 	}
 }
+#endif
 };
