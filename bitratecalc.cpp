@@ -255,11 +255,15 @@ PyMODINIT_FUNC PyInit_bitratecalc(void)
 
 	if (m == NULL)
 		return NULL;
+	else
+                return m;
+
 	if (!PyType_Ready(&eBitrateCalculatorPyType))
 	{
 		Org_Py_INCREF((PyObject*)&eBitrateCalculatorPyType);
 		PyModule_AddObject(m, "eBitrateCalculator", (PyObject*)&eBitrateCalculatorPyType);
 	}
+	return m;
 }
 #else
 PyMODINIT_FUNC
