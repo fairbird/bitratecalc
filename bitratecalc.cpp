@@ -255,8 +255,6 @@ PyMODINIT_FUNC PyInit_bitratecalc(void)
 
 	if (m == NULL)
 		return NULL;
-	else
-                return m;
 
 	if (!PyType_Ready(&eBitrateCalculatorPyType))
 	{
