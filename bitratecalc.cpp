@@ -191,10 +191,10 @@ static PyGetSetDef eBitrateCalculatorPy_getseters[] = {
 
 static PyTypeObject eBitrateCalculatorPyType = {
 	PyObject_HEAD_INIT(NULL)
-	0, /*ob_size*/
 #if PY_MAJOR_VERSION < 3
-	"eBitrateImpl.eBitrateCalculator", /*tp_name*/
+	0, /*ob_size*/
 #endif
+	"eBitrateImpl.eBitrateCalculator", /*tp_name*/
 	sizeof(eBitrateCalculatorPy), /*tp_basicsize*/
 	0, /*tp_itemsize*/
 	(destructor)eBitrateCalculatorPy_dealloc, /*tp_dealloc*/
